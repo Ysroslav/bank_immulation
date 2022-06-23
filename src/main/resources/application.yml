@@ -1,0 +1,19 @@
+server:
+  port: 7070
+
+basePath:
+  api: /bank/api
+
+setting:
+  client: test
+  secret: test
+
+path:
+  payment: http://loclhost:7070/bank/api/index
+
+bank:
+  web:
+    resources_path: C:\\Users\\Dell\\Desktop\\Project-study-artel\\service_simulator\\bank\\payment\\src\\resources\\
+
+
+
