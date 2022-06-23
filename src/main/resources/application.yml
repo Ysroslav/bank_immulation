@@ -9,11 +9,11 @@ setting:
   secret: test
 
 path:
-  payment: http://loclhost:7070/bank/api/index
+  payment: http://localhost:7070/bank/api/index
 
 bank:
   web:
-    resources_path: C:\\Users\\Dell\\Desktop\\Project-study-artel\\service_simulator\\bank\\payment\\src\\resources\\
+    resources_path: ./src/resources
 
 
 
