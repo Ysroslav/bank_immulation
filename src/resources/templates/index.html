@@ -5,6 +5,24 @@
     <title>Payment platform</title>
 </head>
 <body>
+<script type="text/javascript">
+  function myFunction() {
+    console.log("test")
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const paymentId = urlParams.get("payment_id");
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://localhost:7070/payment/api/add?payment_id=" + paymentId);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        window.location = xhr.responseText;
+      }
+    }
+    xhr.send();
 
+
+  }
+</script>
+  <button onclick="myFunction()">Payment</button>
 </body>
 </html>

@@ -22,10 +22,18 @@ public class RouterHandler {
         return RouterFunctions.route()
                 .GET(property.getBasePath() + "/authorize", handler::authorize)
                 .POST(property.getBasePath() + "/payment", handler::createPayment)
-                .GET(property.getBasePath() + "/index", handler::index)
                 .GET(property.getBasePath() + "/test", handler::testAuth)
                 .GET(property.getBasePath() + "/payments/{payment_id}", handler::checkStatus)
                 .filter(filter)
                 .build();
     }
+
+    @Bean
+    public RouterFunction<ServerResponse> routePublic(final PaymentHandler handler) {
+        return RouterFunctions.route()
+                              .POST(property.getBaseIndex() + "/add", handler::addPayment)
+                              .GET(property.getBaseIndex() + "/index", handler::index)
+                              .build();
+    }
+
 }

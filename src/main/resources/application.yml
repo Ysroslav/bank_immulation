@@ -3,17 +3,18 @@ server:
 
 basePath:
   api: /bank/api
+  index: /payment/api
 
 setting:
   client: test
   secret: test
 
 path:
-  payment: http://localhost:7070/bank/api/index
+  payment: http://localhost:7070/payment/api/index
 
 bank:
   web:
-    resources_path: ./src/resources
+    resources_path: ./src/resources/
 
 
 

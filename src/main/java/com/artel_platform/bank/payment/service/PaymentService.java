@@ -4,6 +4,7 @@ import com.artel_platform.bank.payment.dto.ConfirmationDTO;
 import com.artel_platform.bank.payment.dto.MetadataDTO;
 import com.artel_platform.bank.payment.dto.PaymentDTO;
 import com.artel_platform.bank.payment.dto.PaymentInputDTO;
+import com.artel_platform.bank.payment.dto.PaymentMetadata;
 import com.artel_platform.bank.payment.dto.RecipientDTO;
 import com.artel_platform.bank.payment.enums.StatusPayment;
 import com.artel_platform.bank.payment.property.CommonProperty;
@@ -25,13 +26,16 @@ public class PaymentService {
     private final MapPayment mapPayment;
 
     public PaymentDTO createPayment(final PaymentInputDTO input){
+
+        final var id = UUID.randomUUID().toString();
+
         final var payment =  new PaymentDTO(
-                UUID.randomUUID().toString(),
+                id,
                 StatusPayment.PENDING,
                 false,
                 input.amount(),
                 new ConfirmationDTO(
-                    input.confirmation().confirmation(), commonProperty.getPaymentUrl()
+                    input.confirmation().confirmation(), commonProperty.getPaymentUrl() + "?payment_id=" + id
                 ),
                 ZonedDateTime.now().format(formatter),
                 input.description(),
@@ -43,7 +47,11 @@ public class PaymentService {
                 false
         );
 
-        mapPayment.add(payment);
+        final var paymentMetadata = new PaymentMetadata();
+        paymentMetadata.setPayment(payment);
+        paymentMetadata.setReturnUrl(input.confirmation().returnUrl());
+
+        mapPayment.add(paymentMetadata);
         return payment;
     }
 }

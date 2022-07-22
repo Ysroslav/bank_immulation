@@ -62,7 +62,7 @@ public class UtilException {
         return status;
     }
 
-    public static <T > void validateObject(T target, Validator validator){
+    public static <T> void validateObject(T target, Validator validator){
         final Errors errors = new BeanPropertyBindingResult(
                 target,
                 target.getClass().getName());

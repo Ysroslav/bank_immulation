@@ -11,6 +11,9 @@ public class CommonProperty {
     @Value("${basePath.api}")
     private String basePath;
 
+    @Value("${basePath.index}")
+    private String baseIndex;
+
     @Value("${setting.client}")
     private String client;
 

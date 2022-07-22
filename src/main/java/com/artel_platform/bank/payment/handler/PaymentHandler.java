@@ -1,6 +1,5 @@
 package com.artel_platform.bank.payment.handler;
 
-import com.artel_platform.bank.payment.dto.PaymentDTO;
 import com.artel_platform.bank.payment.dto.PaymentInputDTO;
 import com.artel_platform.bank.payment.enums.StatusPayment;
 import com.artel_platform.bank.payment.exception.NotFoundParametrInRequest;
@@ -11,6 +10,8 @@ import com.artel_platform.bank.payment.validation.AmountValidation;
 import com.artel_platform.bank.payment.validation.ConfirmationValidation;
 import com.artel_platform.bank.payment.validation.PaymentValidation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentHandler {
 
     private final PaymentService paymentService;
@@ -26,6 +28,7 @@ public class PaymentHandler {
     private final MapPayment mapPayment;
 
     public Mono<ServerResponse> index(final ServerRequest request) {
+        log.info("start redirect to index");
         return ServerResponse
                 .ok()
                 .contentType(MediaType.TEXT_HTML)
@@ -58,12 +61,29 @@ public class PaymentHandler {
     }
 
     public Mono<ServerResponse> checkStatus(final ServerRequest request) {
+        log.info("start method checkStatus");
         final var idRate = request.pathVariable("payment_id");
         if (idRate.isBlank()){
             throw new NotFoundParametrInRequest("payment_id not found");
         }
-        return Mono.just(mapPayment.get(idRate)).map(paymentDTO -> paymentDTO.changeStatus(StatusPayment.SUCCEEDED))
-            .flatMap(a -> ServerResponse.ok().bodyValue(a))
+        log.info(idRate);
+        return Mono.just(mapPayment.get(idRate))
+            .flatMap(a -> ServerResponse.ok().bodyValue(a.getPayment()))
+            .onErrorResume(e -> utilException.getAttributesError(e, request));
+    }
+
+    public Mono<ServerResponse> addPayment(ServerRequest request) {
+        log.info("start method addPayment");
+        final var idPayment = request.queryParam("payment_id")
+                                     .orElseThrow(() -> new NotFoundParametrInRequest("payment_id not found"));
+
+        return Mono.just(mapPayment.get(idPayment))
+            .doOnNext(paymentMeta -> {
+                var payment = paymentMeta.getPayment();
+                payment = payment.changeStatus(StatusPayment.SUCCEEDED);
+                paymentMeta.setPayment(payment);
+            })
+            .flatMap(a -> ServerResponse.status(HttpStatus.OK).bodyValue(a.getReturnUrl()))
             .onErrorResume(e -> utilException.getAttributesError(e, request));
     }
 }
